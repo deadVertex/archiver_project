@@ -12,5 +12,10 @@
 #*.la
 #*.a
 
+# Visual Studio Stuff
+*.idb
+*.ilk
+*.pdb
+
 # Build Directory
 build/
