@@ -23,9 +23,39 @@ public:
 
 	inline char *GetPixelData() const { return m_pPixelStorage; }
 
+	 virtual void onResponsive( Berkelium::Window *win)
+	 {
+		int a = 0;
+	 }
+
+	virtual void onStartLoading( Berkelium::Window *wini, Berkelium::URLString s )
+	{
+		int a = 0;
+	}
+	
+	virtual void onLoadingStateChanged( Berkelium::Window *wini, bool b )
+	{
+		int a = 0;
+	}
+
+	virtual void onCrashed(Berkelium::Window *wini )
+	{
+		int a = 0;
+	}
+
+	virtual void onCrashedWorker( Berkelium::Window *wini )
+	{
+		int a = 0;
+	}
+
+	virtual void onUnresponsive( Berkelium::Window *wini )
+	{
+		int a = 0;
+	}
+
 public:
-	static const Uint32 g_nWidth;
-	static const Uint32 g_nHeight;
+	static const Uint32 g_nWidth = 1280;
+	static const Uint32 g_nHeight = 720;
 	static Berkelium::Context *g_pContext;
 
 private:

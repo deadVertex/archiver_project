@@ -11,9 +11,12 @@ public:
 	void Initialize();
 	void Shutdown();
 	void ProcessInputEvents();
+	void Refresh();
 
 private:
 	SDL_Window *m_pWindow;
+	SDL_Renderer *m_pRenderer;
+	SDL_Texture *m_pTexture;
 	Webview m_cWebview;
 };
 

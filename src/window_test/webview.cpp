@@ -1,12 +1,12 @@
 #include "webview.h"
 
-const Uint32 Webview::g_nWidth = 1280;
-const Uint32 Webview::g_nHeight = 720;
+Berkelium::Context *Webview::g_pContext = NULL;
 
 Webview::Webview()
 {
 	m_pWindow = NULL;
 	m_pPixelStorage = NULL;
+	m_bNeedsFullRefresh = true;
 }
 
 void Webview::Initialize()
@@ -129,12 +129,24 @@ bool MapOnPaintToTexture(
 
 				Uint32 xOffset = copy_rects[ i ].left();
 				Uint32 yOffset = copy_rects[ i ].top();
-
-				for ( Uint32 y = yOffset; y < (Uint32)hig; y++ )
+				
+				if ( wid == Webview::g_nWidth )
 				{
-					memcpy( pFinalOutput + y * wid * kBytesPerPixel + xOffset,
-						scroll_buffer + y * wid * kBytesPerPixel + xOffset,
-						wid*kBytesPerPixel );
+					for ( Uint32 y = yOffset; y < (Uint32)hig; y++ )
+					{
+						memcpy( pFinalOutput + y * Webview::g_nWidth * kBytesPerPixel + xOffset * kBytesPerPixel,
+							scroll_buffer + ( y - yOffset ) * wid * kBytesPerPixel,
+							wid*kBytesPerPixel );
+					}
+				}
+				else
+				{
+					for ( Uint32 y = yOffset; y < (Uint32)hig; y++ )
+					{
+						memcpy( pFinalOutput + y * Webview::g_nWidth * kBytesPerPixel,
+							scroll_buffer + ( y - yOffset ) * wid * kBytesPerPixel,
+							wid*kBytesPerPixel );
+					}
 				}
     }
 

@@ -10,6 +10,7 @@ int main( int argc, char ** argv )
 	while ( 1 )
 	{
 		cWindow.ProcessInputEvents();
+		cWindow.Refresh();
 	}
 
 	return 0;
