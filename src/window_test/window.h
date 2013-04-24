@@ -8,7 +8,7 @@ class Window
 {
 public:
 	Window();
-	void Initialize();
+	void Initialize( const char *pStr );
 	void Shutdown();
 	void ProcessInputEvents();
 	void Refresh();

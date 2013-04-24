@@ -7,7 +7,7 @@ Window::Window()
 {
 }
 
-void Window::Initialize()
+void Window::Initialize( const char *pStr )
 {
 	if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
 		exit( -1 );
@@ -22,7 +22,10 @@ void Window::Initialize()
 
 	m_cWebview.Initialize();
 
-	m_cWebview.LoadHtmlFromFile( "http://www.google.com" );
+	char buffer[ 1200 ];
+	memset( buffer, 0, 1200 );
+	sprintf( buffer, "file:///%s/%s", pStr, "test.html" );
+	m_cWebview.LoadHtmlFromFile( buffer );
 }
 
 void Window::Shutdown()
