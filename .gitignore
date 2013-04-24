@@ -19,3 +19,5 @@
 
 # Build Directory
 build/
+
+bin/win32/window_test.exe
