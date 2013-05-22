@@ -19,11 +19,12 @@ int main( int argc, char **argv )
 
 	while ( archive_read_next_header( a, &entry ) == ARCHIVE_OK )
 	{
-		printf( "%s", archive_entry_pathname( entry ) );
+		printf( "%s\n", archive_entry_pathname( entry ) );
 		archive_read_data_skip( a );
 	}
 
 	r = archive_read_free( a );
-	if ( r != ARCHIVE_OK )
-		exit( 1 );
+	getchar();
+	//if ( r != ARCHIVE_OK )
+	//	exit( 1 );
 }
