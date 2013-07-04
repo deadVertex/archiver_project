@@ -22,3 +22,4 @@ build/
 
 bin/win32/window_test_debug.exe
 bin/win32/archive_contents_test_debug.exe
+bin/win32/archiver.exe
