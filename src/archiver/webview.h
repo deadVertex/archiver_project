@@ -8,6 +8,8 @@ typedef unsigned int Uint32;
 #include <berkelium/Window.hpp>
 #include <berkelium/WindowDelegate.hpp>
 
+#include "logging.h"
+
 class Webview : public Berkelium::WindowDelegate
 {
 public:
@@ -24,6 +26,10 @@ public:
 	inline char *GetPixelData() const { return m_pPixelStorage; }
 
 	void ExecuteJavascript( const std::string &javascript );
+
+	void InjectLeftMouseUp();
+	void InjectLeftMouseDown();
+	void InjectMouseMotion( Uint32 x, Uint32 y );
 
 	 virtual void onResponsive( Berkelium::Window *win)
 	 {
@@ -54,6 +60,17 @@ public:
 	{
 		int a = 0;
 	}
+
+	void onConsoleMessage( Berkelium::Window *win, Berkelium::WideString message,
+		Berkelium::WideString sourceId, int line_no )
+	{
+		logging::dout << sourceId << "(" << line_no << "): " << message << std::endl;
+	}
+
+	void onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
+		Berkelium::URLString url, Berkelium::WideString funcName,
+		Berkelium::Script::Variant *args, size_t numArgs );
+
 
 public:
 	static const Uint32 g_nWidth = 1280;

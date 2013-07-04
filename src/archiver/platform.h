@@ -4,6 +4,8 @@
 #include <SDL2/SDL_config.h>
 #include <SDL2/SDL_stdinc.h>
 
+#define MAGMA_32BIT
+
 // For custom compile time warnings
 #define GEN_PREPROCESSOR_STRING_IMPL(x) #x
 #define GEN_PREPROCESSOR_STRING(x) GEN_PREPROCESSOR_STRING_IMPL(x)

@@ -1,4 +1,4 @@
-#include "magma_assert/base_assert.h"
+#include "base_assert.h"
 
 #include <stdio.h>
 #include <time.h>

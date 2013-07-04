@@ -1,5 +1,8 @@
 #include "webview.h"
 
+#include "base_assert.h"
+#include "logging.h"
+
 Berkelium::Context *Webview::g_pContext = NULL;
 
 Webview::Webview()
@@ -21,6 +24,9 @@ void Webview::Initialize()
 	m_pWindow->resize( g_nWidth, g_nHeight );
 	m_pWindow->setDelegate( this );
 	m_pWindow->setTransparent( false );
+	m_pWindow->addBindOnStartLoading( Berkelium::WideString::point_to(L"func"),
+		Berkelium::Script::Variant::bindFunction( 
+		Berkelium::WideString::point_to(L"func"), false) );
 }
 
 void Webview::Shutdown()
@@ -167,4 +173,45 @@ void Webview::onPaint( Berkelium::Window *wini,
 		{
 			m_bNeedsFullRefresh = false;
 		}
+}
+
+void Webview::onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
+	Berkelium::URLString url, Berkelium::WideString funcName,
+	Berkelium::Script::Variant *args, size_t numArgs )
+{
+	if ( numArgs == 1 )
+	{
+		// Check function name.
+		if ( !wcscmp( funcName.mData, L"func" ) )
+		{
+			if ( args[0].type() == Berkelium::Script::Variant::JSSTRING )
+			{
+				char buffer[240];
+				memset( buffer, 0, 240 );
+
+				if ( ASSERT_FIX( args[0].toString().length() < 240 ) ) return;
+
+				wcstombs( buffer, args[0].toString().mData, args[0].toString().length() );
+				logging::dout<< "func called." << std::endl;
+				//g_pClientVM->ExecuteString( buffer, url.data() );
+				//PrintLineDebug( "application", "LuaExec: \"%s\".", buffer );
+			}
+		}
+	}
+}
+
+void Webview::InjectLeftMouseUp()
+{
+	ASSERT( m_pWindow );
+	m_pWindow->mouseButton( 0, false );
+}
+void Webview::InjectLeftMouseDown()
+{
+	ASSERT( m_pWindow );
+	m_pWindow->mouseButton( 0, true );
+}
+void Webview::InjectMouseMotion( Uint32 x, Uint32 y )
+{
+	ASSERT( m_pWindow );
+	m_pWindow->mouseMoved( x, y );
 }

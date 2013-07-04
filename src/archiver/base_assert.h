@@ -1,7 +1,7 @@
 #ifndef __MAGMA_BASE_ASSERT_H__
 #define __MAGMA_BASE_ASSERT_H__
 
-#include "magma_core/platform.h"
+#include "platform.h"
 
 namespace magma_assert
 {

@@ -24,7 +24,7 @@ void Window::Initialize( const char *pStr )
 
 	char buffer[ 1200 ];
 	memset( buffer, 0, 1200 );
-	sprintf( buffer, "file:///%s/%s", pStr, "test.html" );
+	sprintf( buffer, "file:///%s/%s", pStr, "ui.html" );
 	m_cWebview.LoadHtmlFromFile( buffer );
 }
 
@@ -52,10 +52,19 @@ void Window::ProcessInputEvents()
 			case SDL_KEYUP:
 				break;
 			case SDL_MOUSEMOTION:
+				m_cWebview.InjectMouseMotion( event.motion.x, event.motion.y );
 				break;
 			case SDL_MOUSEBUTTONDOWN:
+				if ( event.button.button == 1 )
+				{
+					m_cWebview.InjectLeftMouseDown();
+				}
 				break;
 			case SDL_MOUSEBUTTONUP:
+				if ( event.button.button == 1 )
+				{
+					m_cWebview.InjectLeftMouseUp();
+				}
 				break;
 			case SDL_QUIT:
 				Shutdown();
