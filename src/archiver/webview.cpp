@@ -149,7 +149,7 @@ bool MapOnPaintToTexture(
 				{
 					for ( Uint32 y = yOffset; y < (Uint32)hig; y++ )
 					{
-						memcpy( pFinalOutput + y * Webview::g_nWidth * kBytesPerPixel,
+						memcpy( pFinalOutput + y * Webview::g_nWidth * kBytesPerPixel + xOffset * kBytesPerPixel,
 							scroll_buffer + ( y - yOffset ) * wid * kBytesPerPixel,
 							wid*kBytesPerPixel );
 					}
