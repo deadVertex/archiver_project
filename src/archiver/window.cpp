@@ -7,6 +7,19 @@ Window::Window()
 {
 }
 
+void Window::HandleEvent( const Event *event )
+{
+	if ( event->GetType() == event_types::HTML_EVENT )
+	{
+		const HtmlEvent *p = event_cast< HtmlEvent >( event );
+		if ( p->arg == "quit" )
+		{
+			Shutdown();
+			exit( 0 );
+		}
+	}
+}
+
 void Window::Initialize( const char *pStr )
 {
 	if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
@@ -21,6 +34,9 @@ void Window::Initialize( const char *pStr )
 		SDL_TEXTUREACCESS_STREAMING, 1280, 720 );
 
 	m_cWebview.Initialize();
+	m_cWebview.SetEventQueue( &m_cEventQueue );
+
+	m_cEventQueue.AddHandler( this );
 
 	char buffer[ 1200 ];
 	memset( buffer, 0, 1200 );
@@ -76,6 +92,8 @@ void Window::ProcessInputEvents()
 
 void Window::Refresh()
 {
+	m_cEventQueue.ProcessEvents( SDL_GetTicks() );
+
 	Berkelium::update();
 
 	char *pPixels = m_cWebview.GetPixelData();

@@ -10,6 +10,7 @@ Webview::Webview()
 	m_pWindow = NULL;
 	m_pPixelStorage = NULL;
 	m_bNeedsFullRefresh = true;
+	m_pEventQueue = NULL;
 }
 
 void Webview::Initialize()
@@ -24,9 +25,9 @@ void Webview::Initialize()
 	m_pWindow->resize( g_nWidth, g_nHeight );
 	m_pWindow->setDelegate( this );
 	m_pWindow->setTransparent( false );
-	m_pWindow->addBindOnStartLoading( Berkelium::WideString::point_to(L"func"),
+	m_pWindow->addBindOnStartLoading( Berkelium::WideString::point_to(L"QueueEvent"),
 		Berkelium::Script::Variant::bindFunction( 
-		Berkelium::WideString::point_to(L"func"), false) );
+		Berkelium::WideString::point_to(L"QueueEvent"), false) );
 }
 
 void Webview::Shutdown()
@@ -147,7 +148,7 @@ bool MapOnPaintToTexture(
 				}
 				else
 				{
-					for ( Uint32 y = yOffset; y < (Uint32)hig; y++ )
+					for ( Uint32 y = yOffset; y < yOffset + (Uint32)hig; y++ )
 					{
 						memcpy( pFinalOutput + y * Webview::g_nWidth * kBytesPerPixel + xOffset * kBytesPerPixel,
 							scroll_buffer + ( y - yOffset ) * wid * kBytesPerPixel,
@@ -182,17 +183,29 @@ void Webview::onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
 	if ( numArgs == 1 )
 	{
 		// Check function name.
-		if ( !wcscmp( funcName.mData, L"func" ) )
+		if ( !wcscmp( funcName.mData, L"QueueEvent" ) )
 		{
 			if ( args[0].type() == Berkelium::Script::Variant::JSSTRING )
 			{
 				char buffer[240];
 				memset( buffer, 0, 240 );
 
-				if ( ASSERT_FIX( args[0].toString().length() < 240 ) ) return;
+				ASSERT( m_pEventQueue != NULL );
+
+				//if ( ASSERT_FIX( args[0].toString().length() < 240 ) ) return;
+
+
+
 
 				wcstombs( buffer, args[0].toString().mData, args[0].toString().length() );
-				logging::dout<< "func called." << std::endl;
+
+				HtmlEvent myEvent;
+				myEvent.arg.assign( buffer, args[0].toString().length() );
+
+				HtmlEvent *p = m_pEventQueue->QueueEvent< HtmlEvent >();
+				p->arg.assign( buffer, args[0].toString().length() );
+
+//				logging::dout<< "func called " << buffer << std::endl;
 				//g_pClientVM->ExecuteString( buffer, url.data() );
 				//PrintLineDebug( "application", "LuaExec: \"%s\".", buffer );
 			}

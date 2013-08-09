@@ -9,6 +9,15 @@ typedef unsigned int Uint32;
 #include <berkelium/WindowDelegate.hpp>
 
 #include "logging.h"
+#include "event.h"
+
+class HtmlEvent : public Event
+{
+public:
+	HtmlEvent() : Event( event_types::HTML_EVENT ) {}
+
+	std::string arg;
+};
 
 class Webview : public Berkelium::WindowDelegate
 {
@@ -71,6 +80,7 @@ public:
 		Berkelium::URLString url, Berkelium::WideString funcName,
 		Berkelium::Script::Variant *args, size_t numArgs );
 
+	void SetEventQueue( EventQueue *queue ) { m_pEventQueue = queue; }
 
 public:
 	static const Uint32 g_nWidth = 1280;
@@ -81,6 +91,7 @@ private:
 	Berkelium::Window *m_pWindow;
 	char *m_pPixelStorage, *m_pWorkingPixelStorage;
 	bool m_bNeedsFullRefresh;
+	EventQueue *m_pEventQueue;
 };
 
 #endif

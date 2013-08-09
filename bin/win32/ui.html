@@ -1,12 +1,12 @@
 <html>
 	<head>
 		<script>
-			function onTest() {
-				func();
+			function onQuit() {
+				QueueEvent("quit");
 			}
 		</script>
 	</head>
 	<body>
-		<button id="test-button" onclick="onTest()">Test</button>
+		<button id="test-button" onclick="onQuit()">Quit</button>
 	</body>
 </html>
