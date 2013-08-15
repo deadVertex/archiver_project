@@ -40,7 +40,7 @@ void Window::Initialize( const char *pStr )
 
 	char buffer[ 1200 ];
 	memset( buffer, 0, 1200 );
-	sprintf( buffer, "file:///%s/%s", pStr, "ui.html" );
+	sprintf( buffer, "file:///%s/%s", pStr, "html/main.html" );
 	m_cWebview.LoadHtmlFromFile( buffer );
 }
 

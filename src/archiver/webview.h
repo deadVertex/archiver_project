@@ -25,7 +25,7 @@ public:
 	Webview();
 	void Initialize();
 	void Shutdown();
-	void LoadHtmlFromFile( const char *pFile );
+	void LoadHtmlFromFile( const std::string path );
 
 	virtual void onPaint(Berkelium::Window *wini,
 		const unsigned char *bitmap_in, const Berkelium::Rect &bitmap_rect,

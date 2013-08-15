@@ -41,9 +41,9 @@ void Webview::Shutdown()
 	Berkelium::destroy();
 }
 
-void Webview::LoadHtmlFromFile( const char *pFile )
+void Webview::LoadHtmlFromFile( const std::string path )
 {
-	m_pWindow->navigateTo( pFile, strlen( pFile ) );
+	m_pWindow->navigateTo( path.c_str(), path.length() );
 }
 
 bool MapOnPaintToTexture(
@@ -194,9 +194,6 @@ void Webview::onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
 
 				//if ( ASSERT_FIX( args[0].toString().length() < 240 ) ) return;
 
-
-
-
 				wcstombs( buffer, args[0].toString().mData, args[0].toString().length() );
 
 				HtmlEvent myEvent;
@@ -204,10 +201,6 @@ void Webview::onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
 
 				HtmlEvent *p = m_pEventQueue->QueueEvent< HtmlEvent >();
 				p->arg.assign( buffer, args[0].toString().length() );
-
-//				logging::dout<< "func called " << buffer << std::endl;
-				//g_pClientVM->ExecuteString( buffer, url.data() );
-				//PrintLineDebug( "application", "LuaExec: \"%s\".", buffer );
 			}
 		}
 	}
