@@ -4,6 +4,14 @@
 #include <SDL2/SDL.h>
 #include "webview.h"
 
+class QuitEvent : public Event
+{
+public:
+	QuitEvent() : Event( event_types::QUIT ) {}
+
+	int m_iExitCode;
+};
+
 class Window : public EventHandler
 {
 public:
@@ -13,6 +21,9 @@ public:
 	void ProcessInputEvents();
 	void Refresh();
 	void HandleEvent( const Event *event );
+	template< typename T >
+	T* QueueEvent()
+	{ return m_cEventQueue.QueueEvent< T >(); }
 
 private:
 	SDL_Window *m_pWindow;

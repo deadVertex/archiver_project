@@ -3,6 +3,10 @@
 
 typedef unsigned int Uint32;
 
+#include <map>
+#include <codecvt>
+#include <locale>
+
 #include <berkelium/Berkelium.hpp>
 #include <berkelium/Context.hpp>
 #include <berkelium/Window.hpp>
@@ -10,6 +14,11 @@ typedef unsigned int Uint32;
 
 #include "logging.h"
 #include "event.h"
+
+typedef std::codecvt_utf8<wchar_t> WCharCodecvt_t;
+typedef std::wstring_convert< WCharCodecvt_t, wchar_t > WideStringConverter_t; 
+
+class Window;
 
 class HtmlEvent : public Event
 {
@@ -19,11 +28,13 @@ public:
 	std::string arg;
 };
 
+typedef void ( *JavascriptCallback )( Window *window, size_t argc, Berkelium::Script::Variant *argv );
+
 class Webview : public Berkelium::WindowDelegate
 {
 public:
 	Webview();
-	void Initialize();
+	void Initialize( Window *window );
 	void Shutdown();
 	void LoadHtmlFromFile( const std::string path );
 
@@ -71,16 +82,15 @@ public:
 	}
 
 	void onConsoleMessage( Berkelium::Window *win, Berkelium::WideString message,
-		Berkelium::WideString sourceId, int line_no )
-	{
-		logging::dout << sourceId << "(" << line_no << "): " << message << std::endl;
-	}
+		Berkelium::WideString sourceId, int line_no );
 
 	void onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
 		Berkelium::URLString url, Berkelium::WideString funcName,
 		Berkelium::Script::Variant *args, size_t numArgs );
 
-	void SetEventQueue( EventQueue *queue ) { m_pEventQueue = queue; }
+	//void SetEventQueue( EventQueue *queue ) { m_pEventQueue = queue; }
+
+	void RegisterFunction( const std::string &functionName, JavascriptCallback callback );
 
 public:
 	static const Uint32 g_nWidth = 1280;
@@ -89,9 +99,15 @@ public:
 
 private:
 	Berkelium::Window *m_pWindow;
+	Window *m_pAppWindow;
 	char *m_pPixelStorage, *m_pWorkingPixelStorage;
 	bool m_bNeedsFullRefresh;
-	EventQueue *m_pEventQueue;
+	//EventQueue *m_pEventQueue;
+
+	typedef std::map< std::string, JavascriptCallback > Map_t;
+	Map_t m_cCallbacksMap;
+
+	WideStringConverter_t m_cStringConverter;
 };
 
 #endif

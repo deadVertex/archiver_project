@@ -6,14 +6,12 @@
 Berkelium::Context *Webview::g_pContext = NULL;
 
 Webview::Webview()
+	: m_pWindow( NULL ), m_pPixelStorage( NULL ),
+		m_bNeedsFullRefresh( true ), m_pAppWindow( NULL )
 {
-	m_pWindow = NULL;
-	m_pPixelStorage = NULL;
-	m_bNeedsFullRefresh = true;
-	m_pEventQueue = NULL;
 }
 
-void Webview::Initialize()
+void Webview::Initialize( Window *window )
 {
 	m_pPixelStorage = new char[ g_nWidth * ( g_nHeight + 1 ) * 4 ];
 	m_pWorkingPixelStorage = new char[ g_nWidth * ( g_nHeight + 1 ) * 4 ];
@@ -25,9 +23,10 @@ void Webview::Initialize()
 	m_pWindow->resize( g_nWidth, g_nHeight );
 	m_pWindow->setDelegate( this );
 	m_pWindow->setTransparent( false );
-	m_pWindow->addBindOnStartLoading( Berkelium::WideString::point_to(L"QueueEvent"),
-		Berkelium::Script::Variant::bindFunction( 
-		Berkelium::WideString::point_to(L"QueueEvent"), false) );
+	m_pAppWindow = window;
+	//m_pWindow->addBindOnStartLoading( Berkelium::WideString::point_to(L"QueueEvent"),
+	//	Berkelium::Script::Variant::bindFunction( 
+	//	Berkelium::WideString::point_to(L"QueueEvent"), false) );
 }
 
 void Webview::Shutdown()
@@ -176,34 +175,36 @@ void Webview::onPaint( Berkelium::Window *wini,
 		}
 }
 
+void Webview::onConsoleMessage( Berkelium::Window *win,
+	Berkelium::WideString message, Berkelium::WideString sourceId,
+	int line_no)
+{
+	std::string msg = m_cStringConverter.to_bytes( message.data() );
+	std::string src = m_cStringConverter.to_bytes( sourceId.data() );
+
+	logging::dout << "Webview console messsage: " << src << " (" << line_no <<
+		 ") \"" << msg << "\"." << std::endl;
+}
+
+void Webview::RegisterFunction( const std::string &functionName, JavascriptCallback callback )
+{
+	m_cCallbacksMap[ functionName ] = callback; 
+	std::wstring wide = m_cStringConverter.from_bytes( functionName );
+	Berkelium::WideString name = Berkelium::WideString::point_to( wide.c_str() );
+	m_pWindow->addBindOnStartLoading( name,
+		Berkelium::Script::Variant::bindFunction( name, false ) );
+}
+
 void Webview::onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
 	Berkelium::URLString url, Berkelium::WideString funcName,
 	Berkelium::Script::Variant *args, size_t numArgs )
 {
-	if ( numArgs == 1 )
-	{
-		// Check function name.
-		if ( !wcscmp( funcName.mData, L"QueueEvent" ) )
-		{
-			if ( args[0].type() == Berkelium::Script::Variant::JSSTRING )
-			{
-				char buffer[240];
-				memset( buffer, 0, 240 );
+	ASSERT( m_pAppWindow );
+	std::string name = m_cStringConverter.to_bytes( funcName.data() );
 
-				ASSERT( m_pEventQueue != NULL );
-
-				//if ( ASSERT_FIX( args[0].toString().length() < 240 ) ) return;
-
-				wcstombs( buffer, args[0].toString().mData, args[0].toString().length() );
-
-				HtmlEvent myEvent;
-				myEvent.arg.assign( buffer, args[0].toString().length() );
-
-				HtmlEvent *p = m_pEventQueue->QueueEvent< HtmlEvent >();
-				p->arg.assign( buffer, args[0].toString().length() );
-			}
-		}
-	}
+	Map_t::iterator iter = m_cCallbacksMap.find( name );
+	if ( iter != m_cCallbacksMap.end() )
+		iter->second( m_pAppWindow, numArgs, args );
 }
 
 void Webview::InjectLeftMouseUp()

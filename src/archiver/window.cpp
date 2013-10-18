@@ -18,6 +18,16 @@ void Window::HandleEvent( const Event *event )
 			exit( 0 );
 		}
 	}
+	else if ( event->GetType() == event_types::QUIT )
+	{
+		Shutdown();
+		exit( 0 );
+	}
+}
+
+void Quit( Window *window, Uint32 argc, Berkelium::Script::Variant *argv )
+{
+	window->QueueEvent< QuitEvent >();
 }
 
 void Window::Initialize( const char *pStr )
@@ -33,8 +43,9 @@ void Window::Initialize( const char *pStr )
 	m_pTexture = SDL_CreateTexture( m_pRenderer, SDL_PIXELFORMAT_RGB888,
 		SDL_TEXTUREACCESS_STREAMING, 1280, 720 );
 
-	m_cWebview.Initialize();
-	m_cWebview.SetEventQueue( &m_cEventQueue );
+	m_cWebview.Initialize( this );
+	m_cWebview.RegisterFunction( "Quit", Quit );
+	//m_cWebview.SetEventQueue( &m_cEventQueue );
 
 	m_cEventQueue.AddHandler( this );
 
