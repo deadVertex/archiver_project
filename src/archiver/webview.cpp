@@ -3,6 +3,20 @@
 #include "base_assert.h"
 #include "logging.h"
 
+enum BerkeliumKeys
+{
+	BK_KEYCODE_PRIOR = 0x21,
+	BK_KEYCODE_NEXT = 0x22,
+	BK_KEYCODE_END = 0x23,
+	BK_KEYCODE_HOME = 0x24,
+	BK_KEYCODE_LEFT = 0x25,
+	BK_KEYCODE_UP = 0x26,
+	BK_KEYCODE_RIGHT = 0x27,
+	BK_KEYCODE_DOWN = 0x28,
+	BK_KEYCODE_INSERT = 0x2D,
+	BK_KEYCODE_DELETE = 0x2E
+};
+
 Berkelium::Context *Webview::g_pContext = NULL;
 
 Webview::Webview()
@@ -207,6 +221,14 @@ void Webview::onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
 		iter->second( m_pAppWindow, numArgs, args );
 }
 
+void Webview::ExecuteJavascript( const std::string &str )
+{
+	WideStringConverter_t converter;
+
+	m_pWindow->executeJavascript( Berkelium::WideString::point_to< std::wstring >(
+		converter.from_bytes( str ) ) );
+}
+
 void Webview::InjectLeftMouseUp()
 {
 	ASSERT( m_pWindow );
@@ -221,4 +243,174 @@ void Webview::InjectMouseMotion( Uint32 x, Uint32 y )
 {
 	ASSERT( m_pWindow );
 	m_pWindow->mouseMoved( x, y );
+}
+
+bool IsSpecialKey( Uint32 nKey )
+{
+  unsigned char ASCII_BACKSPACE = 8;
+  unsigned char ASCII_TAB       = 9;
+  unsigned char ASCII_ESCAPE    = 27;
+  unsigned char ASCII_DELETE    = 127;
+
+	return ( ( nKey == ASCII_BACKSPACE ) || 
+					 ( nKey == ASCII_TAB ) || 
+					 ( nKey == ASCII_ESCAPE ) || 
+					 ( nKey == ASCII_DELETE ) ||
+					 ( nKey == SDLK_LSHIFT ) ||
+					 ( nKey == SDLK_RSHIFT ) ||
+					 ( nKey == SDLK_LCTRL ) || 
+					 ( nKey == SDLK_RCTRL ) ||
+					 ( nKey == SDLK_LALT ) ||
+					 ( nKey == SDLK_RALT ) );
+}
+
+Uint32 MapKeyToBerkeliumKey( Uint32 nKey )
+{
+#define MAP_VK( A, B ) case SDLK_##A: return BK_KEYCODE_##B;
+	switch( nKey )
+	{
+		MAP_VK(INSERT, INSERT);
+    MAP_VK(HOME, HOME);
+    MAP_VK(END, END);
+    MAP_VK(PAGEUP, PRIOR);
+    MAP_VK(PAGEDOWN, NEXT);
+    MAP_VK(LEFT, LEFT);
+    MAP_VK(RIGHT, RIGHT);
+    MAP_VK(UP, UP);
+    MAP_VK(DOWN, DOWN);
+		MAP_VK(DELETE, DELETE);
+		case SDLK_RETURN: return 13;
+		case SDLK_KP_ENTER: return 13;
+    default: return 0;
+	}
+}
+
+Uint32 TranslateKey( Uint32 nKey, bool isShiftActive )
+{
+#define R( A, B ) case A: return B;
+
+	if ( nKey > 96 && nKey < 122 )
+	{
+		if ( isShiftActive )
+		{
+			nKey -= 'a' - 'A';
+			return nKey;
+		}
+	}
+	else if ( nKey > 122 )
+	{
+
+		switch ( nKey )
+		{
+			R( SDLK_KP_DIVIDE, '/' )
+			R( SDLK_KP_MULTIPLY, '*' )
+			R( SDLK_KP_MINUS, '-' )
+			R( SDLK_KP_PLUS, '+' )
+			R( SDLK_KP_ENTER, 13 )
+			R( SDLK_KP_5, '5' )
+		}
+
+		if ( isShiftActive )
+		{
+			switch( nKey )
+			{
+				R( SDLK_KP_0, BK_KEYCODE_INSERT )
+				R( SDLK_KP_1, BK_KEYCODE_END )
+				R( SDLK_KP_2, BK_KEYCODE_DOWN )
+				R( SDLK_KP_3, BK_KEYCODE_NEXT )
+				R( SDLK_KP_4, BK_KEYCODE_LEFT )
+				R( SDLK_KP_6, BK_KEYCODE_RIGHT )
+				R( SDLK_KP_7, BK_KEYCODE_HOME )
+				R( SDLK_KP_8, BK_KEYCODE_UP )
+				R( SDLK_KP_9, BK_KEYCODE_PRIOR )
+				R( SDLK_KP_PERIOD, BK_KEYCODE_DELETE )
+			}
+		}
+		else
+		{
+			switch( nKey )
+			{
+				R( SDLK_KP_0, '0' )
+				R( SDLK_KP_1, '1' )
+				R( SDLK_KP_2, '2' )
+				R( SDLK_KP_3, '3' )
+				R( SDLK_KP_4, '4' )
+				R( SDLK_KP_6, '6' )
+				R( SDLK_KP_7, '7' )
+				R( SDLK_KP_8, '8' )
+				R( SDLK_KP_9, '9' )
+				R( SDLK_KP_PERIOD, '.' )
+			}
+		}
+	}
+	else if ( nKey < 96 )
+	{
+		if ( isShiftActive )
+		{
+			switch ( nKey )
+			{
+				R( '1', '!' )
+				R( '2', '@' )
+				R( '3', '#' )
+				R( '4', '$' )
+				R( '5', '%' )
+				R( '6', '^' )
+				R( '7', '&' )
+				R( '8', '*' )
+				R( '9', '(' )
+				R( '0', ')' )
+				R( '-', '_' )
+				R( '=', '+' )
+				R( '[', '{' )
+				R( ']', '}' )
+				R( '\\', '|' )
+				R( ';', ':' )
+				R( '\'', '\"' )
+				R( ',', '<' )
+				R( '.', '>' )
+				R( '/', '?' )
+			}
+		}
+	}
+		
+	return nKey;
+}
+
+void Webview::InjectKeyEvent( SDL_KeyboardEvent *event )
+{
+	Uint16 sdlMod = event->keysym.mod;
+	int mod = 0;
+	if ( sdlMod & KMOD_ALT )
+		mod |= Berkelium::ALT_MOD;
+	if ( sdlMod & KMOD_CTRL )
+		mod |= Berkelium::CONTROL_MOD;
+	if ( sdlMod & KMOD_SHIFT )
+		mod |= Berkelium::SHIFT_MOD;
+
+	Uint32 key = event->keysym.sym;
+
+	Uint32 mappedKey = MapKeyToBerkeliumKey( key );
+	if ( mappedKey )
+	{
+		m_pWindow->keyEvent( event->state == SDL_PRESSED, mod, mappedKey,
+			event->keysym.scancode );
+	}
+
+	
+	if ( key == '\b' || key == '\r' || key == '\n' || key == ' ' || key == 127 ||
+		key >= 'a' && key <= 'z' || key >= 'A' && key <= 'Z')
+	{
+		int nVirKey = tolower( key );
+		if ( key == 127 )
+			nVirKey = BK_KEYCODE_DELETE;
+		m_pWindow->keyEvent( event->state == SDL_PRESSED, mod, nVirKey, 0 );
+	}
+
+	if ( !IsSpecialKey( key ) )
+	{
+		wchar_t sOutChars[ 2 ];
+		sOutChars[ 0 ] = TranslateKey( key, ( mod & Berkelium::SHIFT_MOD ) != 0 );
+		sOutChars[ 1 ] = 0;
+		m_pWindow->textEvent( sOutChars, 2 );
+	}
 }

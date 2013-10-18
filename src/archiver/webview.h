@@ -12,6 +12,8 @@ typedef unsigned int Uint32;
 #include <berkelium/Window.hpp>
 #include <berkelium/WindowDelegate.hpp>
 
+#include <SDL2/SDL.h>
+
 #include "logging.h"
 #include "event.h"
 
@@ -50,6 +52,8 @@ public:
 	void InjectLeftMouseUp();
 	void InjectLeftMouseDown();
 	void InjectMouseMotion( Uint32 x, Uint32 y );
+
+	void InjectKeyEvent( SDL_KeyboardEvent *event );
 
 	 virtual void onResponsive( Berkelium::Window *win)
 	 {

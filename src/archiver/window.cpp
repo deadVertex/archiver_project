@@ -75,8 +75,8 @@ void Window::ProcessInputEvents()
 		switch ( event.type )
 		{
 			case SDL_KEYDOWN:
-				break;
-			case SDL_KEYUP:
+			//case SDL_KEYUP:
+				m_cWebview.InjectKeyEvent( &event.key );
 				break;
 			case SDL_MOUSEMOTION:
 				m_cWebview.InjectMouseMotion( event.motion.x, event.motion.y );
