@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include "webview.h"
 
+#include "archive_worker.h"
+
 class QuitEvent : public Event
 {
 public:
@@ -31,6 +33,7 @@ private:
 	SDL_Texture *m_pTexture;
 	Webview m_cWebview;
 	EventQueue m_cEventQueue;
+	ArchiveWorker worker;
 };
 
 #endif

@@ -3,7 +3,30 @@
 		<script src="js/jquery-1.9.1.js" ></script>
 		<script src="js/jquery-ui-1.10.3.custom.min.js" ></script>
 		<link href="css/smoothness/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+		<link href="css/dynatree/ui.dynatree.css" rel="stylesheet" type="text/css">
+		<script src="js/jquery.dynatree.js" type="text/javascript"></script>
 		<script>
+			function CreateTreeNode( parent, jsonEntry ) {
+				var node = parent.addChild( {
+					title: jsonEntry.name,
+					tooltip: jsonEntry.name,
+					key: jsonEntry.name,
+					isFolder: true
+				} );
+				if ( jsonEntry.children ) {
+					$.each( jsonEntry.children, function( key, value ) {
+						CreateTreeNode( node, value );
+					} );
+				}
+			}
+			
+			function LoadTreeData( json ) {
+				var rootNode = $("#tree").dynatree("getRoot");
+				var data = $.parseJSON( json );
+				$.each( data, function( key, value ) {
+					CreateTreeNode( rootNode, value );
+				});
+			}
 			
 			$(function() {
 				$( "#file-menu" ).menu();
@@ -17,6 +40,25 @@
 				$("body").click( function() {
 					$( "#file-menu" ).hide();
 				} );
+				
+				$("#tree").dynatree({
+					imagePath: "css/dynatree/",
+					dnd: {
+						revert: true,
+						onDragStart: function(node) {
+							if(node.data.isFolder) {
+								return false;
+							}
+							return true;
+						},
+						onDragStop: function(node) {
+							logMsg( "tree.onDragStop( %o )", node );
+						}
+					}
+				});
+				
+				LoadTreeData( GetTreeData( ) );
+				//LoadTreeData( '[ { "name" : "folder1", "children" : [ { "name" : "folder2" } ] }, { "name" : "folder3" } ]' );
 			});
 		</script>
 		<style>
@@ -50,6 +92,14 @@
 				top: 100px;
 				left: 100px;
 			}
+			
+			#tree {
+				position: absolute;
+				top: 60px;
+				left: 20px;
+				width: 250px;
+				height: 80px;
+			}
 		</style>
 	</head>
 	<body style="margin:0; font-family:sans;" >
@@ -62,21 +112,15 @@
 			</div>
 			</div>
 		</div>
+		
 		<ul id="file-menu">
 			<li><a href="#" id="file-menu-open" onclick="Quit()" >Open Archive</a></li>
 			<li><a href="#" id="file-menu-new" onclick="Quit()" >Create New Archive</a></li>
 			<li><a href="#" id="file-menu-quit" onclick="Quit()" >Quit</a></li>
 		</ul>
 		
-		<div id="contents-panel">
-			Active Archive:
-			<label id="current-archive">MyArchive.zip</label><br>
-			<input type="text" value="Level1/Level2" />
-			<ul id="content-items" >
-				<li>File1</li>
-				<li>File2</li>
-				<li>File3</li>
-				<li>File4</li>
+		<div id="tree">
+			<ul style="display:none">
 			</ul>
 		</div>
 	</body>

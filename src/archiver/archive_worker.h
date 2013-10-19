@@ -1,11 +1,11 @@
-#include "libarchive/archive.h"
-#include "libarchive/archive_entry.h"
-#include "cassert"
-#include <cstdlib>
-#include <iostream>
-#include <vector>
+#ifndef __ARCHIVE_WORKER_H__
+#define __ARCHIVE_WORKER_H__
 
-using namespace std;
+#include <vector>
+#include <string>
+
+#include <libarchive/archive.h>
+#include <libarchive/archive_entry.h>
 
 class ArchiveWorker
 {
@@ -34,13 +34,13 @@ public:
 		{
 			// Check if the entry has the directory bit flag set.
 			if ( archive_entry_stat( entry )->st_mode & S_IFDIR )
-				printf( "Is Directory: " );
-			printf( "%s\n", archive_entry_pathname( entry ) );
+				directories.push_back( archive_entry_pathname( entry ) );
+			//printf( "%s\n", archive_entry_pathname( entry ) );
 			archive_read_data_skip( a );
 		}
 
 		r = archive_read_free( a );
-		getchar();
+		//getchar();
 		//if ( r != ARCHIVE_OK )
 		//	exit( 1 );
 	}
@@ -82,38 +82,13 @@ public:
 		int err1 = archive_write_close(a); // Note 4		
 		int err2 = archive_write_free(a); // Note 5
 	}
+
+public:
+	std::vector<std::string> directories;
+
+
 private:
 	archive *myArchive;
 };
 
-int create(ArchiveWorker archive1)
-{
-	const char *outname = "penis.zip";
-	std::vector<std::string> contents;
-	contents.push_back ("test.html");
-	contents.push_back ("ui.html");
-
-	archive1.WriteArchive(outname, contents);
-
-	return 0;
-}
-
-int main( int argc, char *argv )
-{
-	int method;
-	ArchiveWorker archive1;
-
-	cout << "Please select: \n1. Read Archive\n2. Create Archive\n\nEnter Selection (numbers only): ";
-	cin >> method;
-
-	if (method == 1){
-		archive1.OpenArchive("archive.zip");
-		getchar();
-	}else if (method == 2){
-		create(archive1);
-		getchar();
-	}else{
-		cout << "Invalid selection. Terminating application.";
-		getchar();
-	}
-}
+#endif

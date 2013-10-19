@@ -30,7 +30,8 @@ public:
 	std::string arg;
 };
 
-typedef void ( *JavascriptCallback )( Window *window, size_t argc, Berkelium::Script::Variant *argv );
+typedef bool ( *JavascriptCallback )( Window *window, size_t argc,
+	Berkelium::Script::Variant *argv, Berkelium::Script::Variant &returnVal );
 
 class Webview : public Berkelium::WindowDelegate
 {

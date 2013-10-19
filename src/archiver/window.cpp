@@ -25,9 +25,22 @@ void Window::HandleEvent( const Event *event )
 	}
 }
 
-void Quit( Window *window, Uint32 argc, Berkelium::Script::Variant *argv )
+bool Quit( Window *window, Uint32 argc, Berkelium::Script::Variant *argv,
+	Berkelium::Script::Variant &returnVal )
 {
 	window->QueueEvent< QuitEvent >();
+	return false;
+}
+
+bool GetTreeData( Window *window, Uint32 argc, Berkelium::Script::Variant *argv,
+	Berkelium::Script::Variant &returnVal )
+{
+	//for 
+	//window->worker.directories
+
+	returnVal = "[ { \"name\" : \"folder1\", \"children\" : "
+		"[ { \"name\" : \"folder2\" } ] }, { \"name\" : \"folder3\" } ]";
+	return true;
 }
 
 void Window::Initialize( const char *pStr )
@@ -45,6 +58,8 @@ void Window::Initialize( const char *pStr )
 
 	m_cWebview.Initialize( this );
 	m_cWebview.RegisterFunction( "Quit", Quit );
+	m_cWebview.RegisterFunction( "GetTreeData", GetTreeData );
+	//m_cWebview.ExecuteJavascript( "LoadTreeData( '[ { \"name\" : \"folder1\", \"children\" : [ { \"name\" : \"folder2\" } ] }, { \"name\" : \"folder3\" } ]' );" );
 	//m_cWebview.SetEventQueue( &m_cEventQueue );
 
 	m_cEventQueue.AddHandler( this );

@@ -206,7 +206,7 @@ void Webview::RegisterFunction( const std::string &functionName, JavascriptCallb
 	std::wstring wide = m_cStringConverter.from_bytes( functionName );
 	Berkelium::WideString name = Berkelium::WideString::point_to( wide.c_str() );
 	m_pWindow->addBindOnStartLoading( name,
-		Berkelium::Script::Variant::bindFunction( name, false ) );
+		Berkelium::Script::Variant::bindFunction( name, true ) );
 }
 
 void Webview::onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
@@ -216,9 +216,16 @@ void Webview::onJavascriptCallback( Berkelium::Window *win, void* replyMsg,
 	ASSERT( m_pAppWindow );
 	std::string name = m_cStringConverter.to_bytes( funcName.data() );
 
+	Berkelium::Script::Variant returnVal;
+
 	Map_t::iterator iter = m_cCallbacksMap.find( name );
 	if ( iter != m_cCallbacksMap.end() )
-		iter->second( m_pAppWindow, numArgs, args );
+	{
+		if ( iter->second( m_pAppWindow, numArgs, args, returnVal ) )
+			win->synchronousScriptReturn( replyMsg, returnVal );
+	}
+
+
 }
 
 void Webview::ExecuteJavascript( const std::string &str )
