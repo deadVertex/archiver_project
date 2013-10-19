@@ -35,15 +35,23 @@ bool Quit( Window *window, Uint32 argc, Berkelium::Script::Variant *argv,
 bool GetTreeData( Window *window, Uint32 argc, Berkelium::Script::Variant *argv,
 	Berkelium::Script::Variant &returnVal )
 {
-	//for 
+	std::stringstream ss;
+	ss << "[";
+	for ( std::size_t i = 0; i < window->worker.directories.size(); ++i )
+	{
+		ss << " { \"name\" : \"" << window->worker.directories[ i ] << "\" }";
+		if ( i < window->worker.directories.size() - 1 )
+			ss << ", ";
+	}
+	ss << "]";
 	//window->worker.directories
-
-	returnVal = "[ { \"name\" : \"folder1\", \"children\" : "
-		"[ { \"name\" : \"folder2\" } ] }, { \"name\" : \"folder3\" } ]";
+	returnVal = ss.str().c_str();
+	//returnVal = "[ { \"name\" : \"folder1\", \"children\" : "
+	//	"[ { \"name\" : \"folder2\" } ] }, { \"name\" : \"folder3\" } ]";
 	return true;
 }
 
-void Window::Initialize( const char *pStr )
+void Window::Initialize( int argc, char **argv, const char *pStr )
 {
 	if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
 		exit( -1 );
@@ -61,6 +69,9 @@ void Window::Initialize( const char *pStr )
 	m_cWebview.RegisterFunction( "GetTreeData", GetTreeData );
 	//m_cWebview.ExecuteJavascript( "LoadTreeData( '[ { \"name\" : \"folder1\", \"children\" : [ { \"name\" : \"folder2\" } ] }, { \"name\" : \"folder3\" } ]' );" );
 	//m_cWebview.SetEventQueue( &m_cEventQueue );
+
+	if ( argc > 1 )
+		worker.OpenArchive( argv[ 1 ] );
 
 	m_cEventQueue.AddHandler( this );
 

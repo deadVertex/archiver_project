@@ -17,7 +17,7 @@ int main( int argc, char ** argv )
 
 	Window cWindow;
 
-	cWindow.Initialize( sBasePath );
+	cWindow.Initialize( argc, argv, sBasePath );
 
 	while ( 1 )
 	{

@@ -18,7 +18,7 @@ class Window : public EventHandler
 {
 public:
 	Window();
-	void Initialize( const char *pStr );
+	void Initialize( int argc, char **argv, const char *pStr );
 	void Shutdown();
 	void ProcessInputEvents();
 	void Refresh();
@@ -27,13 +27,14 @@ public:
 	T* QueueEvent()
 	{ return m_cEventQueue.QueueEvent< T >(); }
 
+
+	ArchiveWorker worker;
 private:
 	SDL_Window *m_pWindow;
 	SDL_Renderer *m_pRenderer;
 	SDL_Texture *m_pTexture;
 	Webview m_cWebview;
 	EventQueue m_cEventQueue;
-	ArchiveWorker worker;
 };
 
 #endif
