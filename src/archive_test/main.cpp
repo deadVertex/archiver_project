@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -16,6 +18,41 @@ public:
 	}
 	bool GetFilenames(std::vector<std::string> &filenames);
 	bool ExtractFile(const std::string &filename);
+	bool GetStructure()
+	{
+		//provide a structure of the directories within the archive in fileStructure global vector
+		//directory list is from the deepest folder; invert list to start at the top
+		int j = 0;
+		for (int i=directories.size()-1; i>-1; i--)
+		{
+			std::vector<std::string> row;
+			size_t seperator = directories[i].find_last_of('/');
+			if (seperator == -1)
+				row.push_back(directories[i]);
+
+			std::string tempPath;
+			size_t seperator2;
+			row.push_back(directories[i].substr(seperator+1, -1));
+			seperator2 = directories[i].substr(0, seperator-1).find_last_of('/');
+			tempPath = directories[i].substr(seperator2+1, seperator-seperator2);
+
+			for (int g=0; g<fileStructure.size(); g++)
+			{
+				if (fileStructure[g][0] == tempPath)
+				{
+					std::stringstream ss;
+					ss << i;
+					fileStructure[g].push_back(ss.str());
+				}
+			}
+
+			j++;
+			//place the new row within fileStructure global
+			fileStructure.push_back(row);
+		}
+		return true;
+	} 
+
 	int OpenArchive(const char* path)
 	{
 		struct archive *a;
@@ -34,6 +71,7 @@ public:
 		{
 			// Check if the entry has the directory bit flag set.
 			if ( archive_entry_stat( entry )->st_mode & S_IFDIR )
+				directories.push_back( archive_entry_pathname( entry ) );
 				printf( "Is Directory: " );
 			printf( "%s\n", archive_entry_pathname( entry ) );
 			archive_read_data_skip( a );
@@ -41,10 +79,15 @@ public:
 
 		r = archive_read_free( a );
 		getchar();
+		GetStructure();
+		printf("%d | %s\n", 0, fileStructure[0][0]);
+		for (int i=0; i<fileStructure.size(); i++)
+		{
+			printf("%d | %s\n", i, fileStructure[i][0]);
+		}
 		//if ( r != ARCHIVE_OK )
 		//	exit( 1 );
 	}
-
 	void WriteArchive(const char *outname, std::vector<std::string> filename)
 	{
 
@@ -82,6 +125,9 @@ public:
 		int err1 = archive_write_close(a); // Note 4		
 		int err2 = archive_write_free(a); // Note 5
 	}
+
+	std::vector< std::vector<std::string> > fileStructure;
+	std::vector< std::string > directories;
 private:
 	archive *myArchive;
 };
@@ -107,7 +153,7 @@ int main( int argc, char *argv )
 	cin >> method;
 
 	if (method == 1){
-		archive1.OpenArchive("archive.zip");
+		archive1.OpenArchive("folder1.rar");
 		getchar();
 	}else if (method == 2){
 		create(archive1);
