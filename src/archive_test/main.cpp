@@ -23,32 +23,34 @@ public:
 		//provide a structure of the directories within the archive in fileStructure global vector
 		//directory list is from the deepest folder; invert list to start at the top
 		int j = 0;
+		int rowCount = 0;
 		for (int i=directories.size()-1; i>-1; i--)
 		{
+			int skip = 0;
 			std::vector<std::string> row;
 			size_t seperator = directories[i].find_last_of('/');
-			if (seperator == -1)
-				row.push_back(directories[i]);
 
 			std::string tempPath;
 			size_t seperator2;
 			row.push_back(directories[i].substr(seperator+1, -1));
 			seperator2 = directories[i].substr(0, seperator-1).find_last_of('/');
-			tempPath = directories[i].substr(seperator2+1, seperator-seperator2);
+			tempPath = directories[i].substr(seperator2+1, seperator-seperator2-1);
 
 			for (int g=0; g<fileStructure.size(); g++)
 			{
 				if (fileStructure[g][0] == tempPath)
 				{
 					std::stringstream ss;
-					ss << i;
+					ss << rowCount;
 					fileStructure[g].push_back(ss.str());
+					break;
 				}
 			}
 
 			j++;
 			//place the new row within fileStructure global
 			fileStructure.push_back(row);
+			rowCount++;
 		}
 		return true;
 	} 
@@ -80,14 +82,28 @@ public:
 		r = archive_read_free( a );
 		getchar();
 		GetStructure();
-		printf("%d | %s\n", 0, fileStructure[0][0]);
-		for (int i=0; i<fileStructure.size(); i++)
-		{
-			printf("%d | %s\n", i, fileStructure[i][0]);
-		}
+
+		//###TEST FUNCTION ONLY - DO NOT COPY###
+		StructureToString();
+		//###
+
 		//if ( r != ARCHIVE_OK )
 		//	exit( 1 );
 	}
+
+	//TEST FUNCTION ONLY
+	void StructureToString(){	
+		for (int i=0; i<fileStructure.size(); i++)
+		{
+			printf("%d | %s", i, fileStructure[i][0].c_str());
+			for (int j=1; j<fileStructure[i].size(); j++)
+			{
+				printf(" | %s", fileStructure[i][j].c_str());
+			}
+			printf("\n");
+		}
+	}
+
 	void WriteArchive(const char *outname, std::vector<std::string> filename)
 	{
 
