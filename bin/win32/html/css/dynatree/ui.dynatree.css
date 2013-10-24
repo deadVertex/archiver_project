@@ -8,7 +8,7 @@ ul.dynatree-container
 	white-space: nowrap;
 	padding: 3px;
 	margin: 0; /* issue 201 */
-	background-color: white;
+	background-color: #cecece;
 	overflow: auto;
 	height: 100%; /* issue 263 */
 }
@@ -79,7 +79,7 @@ span.dynatree-drag-helper-img,
 	vertical-align: top;
 	background-repeat: no-repeat;
 	background-position: left;
-	background-image: url("icons.png");
+	background-image: url("icons.gif");
 	background-position: 0 0;
 }
 
