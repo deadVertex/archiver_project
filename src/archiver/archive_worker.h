@@ -19,6 +19,7 @@ public:
 	bool ExtractFile(const std::string &filename);
 	int OpenArchive(const char* path);
 	void WriteArchive(const char *outname, std::vector<std::string> filename);
+
 public:
 	std::vector< std::vector<std::string> > fileStructure;
 	std::vector< std::string > directories;

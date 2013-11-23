@@ -61,7 +61,7 @@ int ArchiveWorker::OpenArchive( const char *path)
 		//printf( "%s\n", archive_entry_pathname( entry ) );
 		archive_read_data_skip( a );
 	}
-
+	
 	r = archive_read_free( a );
 	//getchar();
 	//if ( r != ARCHIVE_OK )
