@@ -36,7 +36,7 @@ public:
 			seperator2 = directories[i].substr(0, seperator-1).find_last_of('/');
 			tempPath = directories[i].substr(seperator2+1, seperator-seperator2-1);
 
-			for (int g=0; g<fileStructure.size(); g++)
+			for (unsigned int g=0; g<fileStructure.size(); g++)
 			{
 				if (fileStructure[g][0] == tempPath)
 				{
@@ -72,9 +72,13 @@ public:
 		while ( archive_read_next_header( a, &entry ) == ARCHIVE_OK )
 		{
 			// Check if the entry has the directory bit flag set.
-			if ( archive_entry_stat( entry )->st_mode & S_IFDIR )
+			if ( archive_entry_stat( entry )->st_mode & S_IFDIR ){
 				directories.push_back( archive_entry_pathname( entry ) );
-				printf( "Is Directory: " );
+				printf( "Is Directory: ");
+			}else{
+				time_t temp = archive_entry_mtime(entry);
+				printf("Size: %d\nTime: %s\n", archive_entry_size(entry), ctime(&temp));
+			}
 			printf( "%s\n", archive_entry_pathname( entry ) );
 			archive_read_data_skip( a );
 		}
@@ -169,7 +173,7 @@ int main( int argc, char *argv )
 	cin >> method;
 
 	if (method == 1){
-		archive1.OpenArchive("folder1.rar");
+		archive1.OpenArchive("archive.rar");
 		getchar();
 	}else if (method == 2){
 		create(archive1);
