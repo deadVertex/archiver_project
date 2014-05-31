@@ -5,24 +5,34 @@
 class ArchivedFile
 {
 public:
-	ArchivedFile(const std::string &path)
-    : m_path(path)
-	{
-	}
+  ArchivedFile( const std::string &path )
+    : m_path( path )
+  {
+  }
 
-	~ArchivedFile()
-	{
-	}
+  ~ArchivedFile()
+  {
+  }
 
   std::string getPath() const
   {
     return m_path;
   }
 
+  void setContents( const std::string fileContents )
+  {
+    m_fileContents = fileContents;
+  }
+
+  std::string getContents() const
+  { 
+    return m_fileContents;
+  }
+
 protected:
 
 private:
-  std::string m_path;
+  std::string m_path, m_fileContents;
 };
 
 
