@@ -1,6 +1,7 @@
 import sys
 import os
 import zipfile
+import rarfile
 
 def archiverMain():
     #Definitions
@@ -53,6 +54,8 @@ class Archive:
     def open(self):
         if self.fileExtension == "zip":
             self.openZip()
+        elif self.fileExtension == "rar":
+            self.openRar()
 
     def write(self, contents):
         if self.fileExtension == "zip":
@@ -73,6 +76,14 @@ class Archive:
         #write files
         for data in contents:
             self.a.write(data['basename'], data['name'], zipfile.ZIP_DEFLATED)
+        #close the file
+        self.a.close()
+
+    def openRar(self):
+        #open the zip
+        self.a = rarfile.RarFile(self.fileName, "r")
+        #fetch the files/folders
+        self.aNameList = self.a.namelist()
         #close the file
         self.a.close()
     
