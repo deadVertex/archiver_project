@@ -339,12 +339,14 @@ class RarUnknownError(RarExecError):
 class RarSignalExit(RarExecError):
     """Unrar exited with signal"""
 
-
+# Modified because it produced a warning about the file not being closed.
 def is_rarfile(fn):
     '''Check quickly whether file is rar archive.'''
-    buf = open(fn, "rb").read(len(RAR_ID))
+    f = open( fn, "rb" )
+    buf = f.read(len(RAR_ID))
+    #buf = open(fn, "rb").read(len(RAR_ID))
+    f.close()
     return buf == RAR_ID
-
 
 class RarInfo(object):
     r'''An entry in rar archive.
