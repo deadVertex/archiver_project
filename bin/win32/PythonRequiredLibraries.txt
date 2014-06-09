@@ -1,0 +1,4 @@
+Rarfile
+http://rarfile.readthedocs.org/en/latest/api.html
+py7zlib
+https://github.com/fancycode/pylzma
