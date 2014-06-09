@@ -27,12 +27,12 @@ def archiverMain():
         if not(os.path.isfile(fileName)):
             print("Invalid file name supplied")
         else:
-            archive = Archive(fileName)
+            archive = Archive.Archive(fileName)
             archive.open()
     elif mode == "write" and fileName != "":
         #Create output file to validate name
         try:
-            archive = Archive(fileName)
+            archive = Archive.Archive(fileName)
             archive.write(contents)
         except Exception as e:
             print("There was an error writing to file. Please ensure files are in the same folder as the .py, and the filenames are valid.\n" + e)

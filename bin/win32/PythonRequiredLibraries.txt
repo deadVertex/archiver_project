@@ -1,4 +1,4 @@
 Rarfile
 http://rarfile.readthedocs.org/en/latest/api.html
-py7zlib
-https://github.com/fancycode/pylzma
+7za.exe (COMMAND LINE 7ZIP)
+http://www.7-zip.org/download.html
