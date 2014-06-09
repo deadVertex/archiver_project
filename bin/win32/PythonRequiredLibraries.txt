@@ -1,0 +1,4 @@
+Rarfile
+https://github.com/markokr/rarfile
+py7zlib
+https://github.com/fancycode/pylzma

@@ -1,29 +1,15 @@
-#include "window.h"
+//#include <boost/python.hpp>
+#include <python/Python.h>
 
-
-int main( int argc, char ** argv )
+int main( int argc, char **argv )
 {
-	Uint32 len = strlen(argv[0]);
-	int lastSepPos = 0;
-	for (int i = 0; argv[0][i] != '\0'; i++)
-	{
-		if (argv[0][i] == '\\' || argv[0][i] == '/')
-			lastSepPos = i;
-	}
+  // TODO: Setup python.
+  Py_Initialize();
+  PyRun_SimpleString( "import sys\n" );
+  PyRun_SimpleString( "sys.stdout.write( \"Hello from an embedded Python Script\")\n" );
+  Py_Finalize();
+  //boost::python::exec( "print(\"Swiggity Swooty\")" );
+  getchar();
 
-	char sBasePath[ 1024 ];
-	strcpy(sBasePath,argv[0]);
-	sBasePath[lastSepPos] = '\0';
-
-	Window cWindow;
-
-	cWindow.Initialize( argc, argv, sBasePath );
-
-	while ( 1 )
-	{
-		cWindow.ProcessInputEvents();
-		cWindow.Refresh();
-	}
-
-	return 0;
+  return 0;
 }
