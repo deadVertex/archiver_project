@@ -12,6 +12,9 @@
 #*.la
 #*.a
 
+# Compiled Python shit
+bin/win32/__pycache__/
+
 # Visual Studio Stuff
 *.idb
 *.ilk
