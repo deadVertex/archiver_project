@@ -1,4 +1,4 @@
 Rarfile
-http://rarfile.readthedocs.org/en/latest/api.html
+https://github.com/markokr/rarfile
 py7zlib
 https://github.com/fancycode/pylzma
