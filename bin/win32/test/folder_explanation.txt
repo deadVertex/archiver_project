@@ -1,2 +1,2 @@
-folder.* used for read tests
+folder.* used for read/extract tests
 folder1.* used for write tests
