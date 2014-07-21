@@ -3,12 +3,16 @@ import os
 import zipfile #zip files
 import rarfile #rar files (open only)
 import tarfile #tar, tar.bz2 and tar.gz/tgz files
-import lzma #lzma and xz files
+#import lzma #lzma and xz files (Python 3.3 or later)
 import bz2 #bz2 files
 import gzip #gz files
 
+#Create Custom exception
+class InvalidTypeError(Exception):
+    pass
+
 class Archive:
-    #GENERAL (EXTENSION INDEPENDANT) METHODS
+    #GENERAL (UNSPECIFIC EXTENSION) METHODS
     #Constructor
     def __init__(self, archive):
         self.fileName = archive
@@ -26,7 +30,7 @@ class Archive:
         else:
             return self.fileName[self.fileName.rfind('.')+1:]
 
-    #Reads the archive for its file(s), checking to see if the archive has to be extracted
+    #Reads the archive for its file(s), and checking to see if the archive has to be extracted
     def open(self, loc=""):
         if self.fileExtension == "zip" and zipfile.is_zipfile(self.fileName):
             if self.extractMode:
@@ -43,11 +47,11 @@ class Archive:
                 self.openTar(loc)
             else:
                 self.openTar()
-        elif self.fileExtension == "lz" or self.fileExtension == "xz":
-            if self.extractMode:
-                self.openLzma(loc)
-            else:
-                self.openLzma()
+        #elif self.fileExtension == "lz" or self.fileExtension == "xz":
+        #    if self.extractMode:
+        #        self.openLzma(loc)
+        #    else:
+        #        self.openLzma()
         elif self.fileExtension == "7z":
             if self.extractMode:
                 self.open7z(loc)
@@ -65,6 +69,7 @@ class Archive:
                 self.openGz()
         else:
             print("Invalid/No file extension found!")
+            raise(InvalidTypeError)
 
     #Writes the contents of 'contents' to the archive
     def write(self, contents):
@@ -80,6 +85,7 @@ class Archive:
             self.writeGz(contents)
         else:
             print("Invalid/No file extension found!")
+            raise(InvalidTypeError)
 
     def extract(self, loc):
         #remove the filename from location for certain archive types to use

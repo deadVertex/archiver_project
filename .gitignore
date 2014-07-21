@@ -12,8 +12,9 @@
 #*.la
 #*.a
 
-# Compiled Python shit
+# Various Python shit
 bin/win32/__pycache__/
+bin/win32/cefpython/
 
 # Visual Studio Stuff
 *.idb

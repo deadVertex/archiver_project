@@ -23,19 +23,34 @@ def archiverMain():
         i=i+1
 
     if not(os.path.isfile(fileName)) and (mode != "write" and mode != "about"):
-        print("Supplied file does not exist")
-        sys.exit(0)
+        print("Not enough paramters or Supplied file does not exist")
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(1)
     else:
         archive = Archive.Archive(fileName)
 
     #Check for valid input
     if mode == "read" and fileName != "":
         #Check valid input file then open the archive
-        archive.open()
+        try:
+            archive.open()
+        except Archive.InvalidTypeError:
+            try:
+                sys.exit(0)
+            except SystemExit:
+                os._exit(1)
         print(archive.aNameList)
     elif mode == "write" and fileName != "":
         #write to archive
-        archive.write(contents)
+        try:
+            archive.write(contents)
+        except Archive.InvalidTypeError:
+            try:
+                sys.exit(0)
+            except SystemExit:
+                os._exit(1)
     elif mode == "extract":
         #Extract the contents of the archive to a listed folder
         if contents:
@@ -48,12 +63,12 @@ def archiverMain():
         print("--An Archiver Project--")
         print()
         print("File Formats Supported:")
-        print("zip, rar(read only), tar, tar.gz, tar.bz2, gz, bz2, lz, xz, 7z")
+        print("zip, rar(read only), tar, tar.gz, tar.bz2, gz, bz2, lz(py33), xz(py33), 7z")
         print()
         print("--Commands--")
         print()
         print("read\tReads the files contained within an archive")
-        print("\tSyntax: open archive_name")
+        print("\tSyntax: read archive_name")
         print()
         print("write\tClears and writes a file(s) to an archive")
         print("\tSyntax: write archive_name [files_to_be_compressed..]")
